@@ -1,0 +1,44 @@
+body {
+  font-family: "Inter", sans-serif;
+  text-align: center;
+  background: linear-gradient(180deg, #f7faff 0%, #eef3f9 100%);
+  padding: 40px 20px;
+  color: #333;
+}
+header h1 {
+  color: #0078ff;
+  margin-bottom: 5px;
+}
+#imageInput {
+  margin: 20px auto;
+  display: block;
+}
+#preview img {
+  max-width: 150px;
+  margin: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+#convertBtn {
+  padding: 10px 20px;
+  background: #0078ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+#convertBtn:hover {
+  background: #005ed1;
+}
+a.back-home {
+  display: inline-block;
+  margin-top: 30px;
+  color: #0078ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+a.back-home:hover {
+  text-decoration: underline;
+}
