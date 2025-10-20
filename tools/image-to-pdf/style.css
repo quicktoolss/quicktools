@@ -77,3 +77,37 @@ a.back-home:hover {
   color: #0078ff;
   margin-top: 5px;
 }
+.img-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.img-wrapper.dragging {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.img-wrapper img {
+  cursor: grab;
+  width: 140px;
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-label {
+  font-size: 0.9rem;
+  color: #0078ff;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+#preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
