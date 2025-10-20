@@ -1,0 +1,103 @@
+body {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(180deg, #f7faff 0%, #eef3f9 100%);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: #333;
+}
+
+.container {
+  max-width: 500px;
+  margin: 80px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+h1 {
+  color: #0078ff;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.upload-box {
+  margin: 20px 0;
+  padding: 40px;
+  border: 2px dashed #0078ff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.upload-box:hover {
+  background: #f0f8ff;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  background: #0078ff;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #005fcc;
+}
+
+.progress {
+  height: 8px;
+  background: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+#progressBar {
+  height: 8px;
+  width: 0%;
+  background: #0078ff;
+  transition: width 0.3s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+#downloadLink {
+  display: inline-block;
+  margin-top: 15px;
+  text-decoration: none;
+  color: white;
+  background: #00a86b;
+  padding: 10px 18px;
+  border-radius: 8px;
+}
+
+.back-link {
+  display: block;
+  margin-top: 25px;
+  color: #0078ff;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
