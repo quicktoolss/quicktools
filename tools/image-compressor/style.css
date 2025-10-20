@@ -101,3 +101,19 @@ footer {
   color: #777;
   font-size: 14px;
 }
+.back-nav {
+  padding: 12px 20px;
+  background: #f3f8ff;
+  border-bottom: 1px solid #d7e5ff;
+}
+
+.back-nav a {
+  color: #0078ff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.back-nav a:hover {
+  color: #005dcc;
+}
