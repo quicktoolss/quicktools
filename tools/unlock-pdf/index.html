@@ -1,0 +1,68 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unlock PDF — QuickTools style</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- PDF.js (for loading encrypted PDFs & rendering pages) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+  <!-- pdf-lib (for assembling a new PDF) -->
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">QuickTools — <strong>Unlock PDF</strong></div>
+      <div class="sub">Remove password protection locally (client-side)</div>
+    </header>
+
+```
+<main class="card">
+  <div class="drop" id="dropArea">
+    <input id="fileInput" type="file" accept="application/pdf" hidden />
+    <div class="drop-content">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 7l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="drop-title">Drag & drop a PDF here, or <button id="browseBtn" class="link">browse</button></div>
+      <div class="drop-sub">We process files locally in your browser. No upload required.</div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <label for="password">Password (if PDF is protected)</label>
+    <input id="password" type="password" placeholder="Enter password (if known)" />
+  </div>
+
+  <div class="actions">
+    <button id="unlockBtn" class="btn primary" disabled>Unlock PDF</button>
+    <button id="clearBtn" class="btn ghost">Clear</button>
+  </div>
+
+  <div class="progress-wrap" aria-hidden="true">
+    <div class="progress-label" id="progressLabel">Idle</div>
+    <div class="progress">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+  </div>
+
+  <div id="previewArea" class="preview"></div>
+
+  <div class="footnote">Note: For maximum compatibility this tool uses page rendering (PDF→images→PDF). Text may not remain selectable for some files. Works entirely in your browser.</div>
+</main>
+
+<footer class="footer">
+  <small>Built to resemble your QuickTools UI — responsive, fast, and local.</small>
+</footer>
+```
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
