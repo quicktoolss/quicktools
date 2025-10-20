@@ -1,5 +1,5 @@
 :root{
-  --bg:#f7faff; --card:#fff; --muted:#6b7280; --accent:#0078ff;
+  --bg:#f7faff; --card:#fff; --muted:#6b7280; --accent:#0078ff; --ok:#00b341;
 }
 *{box-sizing:border-box}
 body{
@@ -7,46 +7,79 @@ body{
 }
 header{padding:22px 18px; text-align:center}
 header h1{margin:0;color:var(--accent);font-size:1.6rem}
-header .tagline{margin:6px 0 0;color:var(--muted)}
+header .tagline{margin:6px 0 0;color:var(--muted); font-size:0.95rem; max-width:900px; margin-left:auto; margin-right:auto}
 
 main.card{
-  max-width:1100px; margin:18px auto; padding:18px; background:var(--card); border-radius:14px; box-shadow:0 8px 30px rgba(2,6,23,0.06);
+  max-width:1200px; margin:18px auto; padding:18px; background:var(--card); border-radius:14px; box-shadow:0 8px 30px rgba(2,6,23,0.06);
 }
 
-.uploader{display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap}
+/* layout */
+.top-row{display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap}
 .dropzone{
-  flex:1 1 320px; min-height:160px; border-radius:10px; border:2px dashed rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; padding:12px; background:linear-gradient(180deg, rgba(0,120,255,0.03), transparent);
+  flex:1 1 420px; min-height:160px; border-radius:10px; border:2px dashed rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; padding:12px; background:linear-gradient(180deg, rgba(0,120,255,0.03), transparent);
   transition: box-shadow .18s, border-color .18s, transform .12s;
 }
 .dropzone.dragover{border-color:rgba(0,120,255,0.9); box-shadow:0 8px 30px rgba(0,120,255,0.06); transform:translateY(-4px)}
+.drop-inner{ text-align:center }
+.hint{ margin-top:8px; color:var(--muted)}
+.controls{flex:1 1 360px}
 
-.controls{flex:1 1 400px}
-
-.row{margin:10px 0}
-.row.two-cols{display:flex; gap:10px}
-.row.two-cols > *{flex:1}
-label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
-input[type="number"], select, input[type="text"]{width:100%; padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:#fff}
+/* controls */
+.control-block{margin-bottom:12px}
 .preset-row{display:flex; gap:8px; flex-wrap:wrap}
 .preset{background:transparent; border:1px solid rgba(0,0,0,0.06); padding:6px 8px; border-radius:8px; cursor:pointer}
 .preset:hover{transform:translateY(-3px); box-shadow:0 6px 12px rgba(2,6,23,0.04)}
 
-.actions-row{display:flex; gap:8px; margin-top:12px; align-items:center}
+.row.two-cols{display:flex; gap:10px}
+label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
+input[type="number"], select, input[type="text"]{width:100%; padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:#fff}
+
+/* actions */
+.actions-row{display:flex; gap:8px; margin-top:8px; align-items:center}
 button.primary{background:var(--accent); color:white; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:600}
 button.ghost{background:transparent; border:1px solid rgba(0,0,0,0.06); padding:10px 12px; border-radius:8px; cursor:pointer}
-button.ghost:hover{transform:translateY(-2px)}
-.small{font-size:13px; color:var(--muted); margin-left:8px}
+.actions-row a.ghost{display:inline-block; padding:10px 12px}
+.quality-row{display:flex; gap:8px; align-items:center}
+#qualityVal{min-width:36px; text-align:center; font-weight:600}
 
-.preview{margin-top:20px; display:flex; flex-wrap:wrap; gap:14px; justify-content:flex-start}
+/* preview grid */
+.preview-wrap{margin-top:18px; display:flex; gap:20px; flex-wrap:wrap}
+.preview{flex:1 1 620px; display:flex; flex-wrap:wrap; gap:14px}
 .img-wrapper{width:150px; display:flex; flex-direction:column; align-items:center; background:#fbfcff; padding:8px; border-radius:10px; box-shadow:0 4px 12px rgba(2,6,23,0.04); transition:transform .18s, box-shadow .18s}
 .img-wrapper.dragging{transform:scale(1.03); box-shadow:0 12px 30px rgba(2,6,23,0.12); z-index:10}
 .img-wrapper img{width:130px; height:auto; border-radius:8px; cursor:grab; transition:transform .12s}
 .page-label{color:var(--accent); font-weight:600; margin-top:8px; font-size:13px}
+.img-meta{font-size:12px; color:var(--muted); margin-top:6px; text-align:center}
+.img-actions{margin-top:8px; display:flex; gap:8px}
 
+/* live preview area */
+.live-preview{flex:1 1 420px; background:#ffffff; border-radius:10px; padding:12px; box-shadow:0 4px 12px rgba(2,6,23,0.04); display:flex; flex-direction:column; gap:10px}
+.live-controls{display:flex; justify-content:space-between; align-items:center}
+.lp-title{font-weight:700; color:var(--accent)}
+.lp-info{font-size:13px; color:var(--muted)}
+
+.lp-canvas-wrap{position:relative; height:320px; border-radius:8px; overflow:hidden; background:#f2f6ff; display:flex; align-items:center; justify-content:center}
+.lp-before, .lp-after{position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center}
+.lp-before img, .lp-after img{max-width:100%; max-height:100%; object-fit:contain; display:block; transition:transform .18s}
+.lp-after{overflow:hidden}
+.lp-slider{position:absolute; top:0; bottom:0; width:3px; background:linear-gradient(180deg, rgba(0,120,255,0.9), rgba(0,212,255,0.9)); left:50%; transform:translateX(-50%); border-radius:2px; cursor:ew-resize}
+
+.lp-actions{display:flex; gap:8px; align-items:center}
+
+/* progress */
 .progress-container{width:100%; max-width:600px; background:#eef2ff; height:10px; border-radius:6px; overflow:hidden}
 .progress-bar{height:100%; width:0%; background:var(--accent); transition:width .25s ease}
+.small{font-size:13px; color:var(--muted)}
 
+/* drop indicator */
 .drop-indicator{width:120px; height:6px; background:linear-gradient(90deg,var(--accent), #00d4ff); border-radius:3px; margin:6px 0; opacity:0.95; animation:pulse .8s infinite alternate}
 @keyframes pulse{from{transform:scaleX(.8);opacity:.6} to{transform:scaleX(1);opacity:1}}
 
+/* toasts */
+.toasts{position:fixed; right:20px; bottom:20px; display:flex; flex-direction:column; gap:8px; z-index:9999}
+.toast{background:#0b1220; color:white; padding:10px 14px; border-radius:8px; box-shadow:0 6px 20px rgba(2,6,23,0.2); opacity:0; transform:translateY(8px); animation:toastIn .28s forwards}
+.toast.success{background:var(--ok)}
+@keyframes toastIn{to{opacity:1; transform:none}}
+
+/* footer */
 footer{padding:14px; text-align:center; color:var(--muted)}
