@@ -1,0 +1,103 @@
+body {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(180deg, #f7faff 0%, #eef3f9 100%);
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  text-align: center;
+  padding: 40px 20px 10px;
+  color: #0078ff;
+}
+
+header p {
+  color: #555;
+}
+
+.upload-area {
+  background: white;
+  border: 2px dashed #0078ff;
+  border-radius: 16px;
+  text-align: center;
+  padding: 50px;
+  margin: 30px auto;
+  max-width: 600px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-area:hover {
+  background: #f0f7ff;
+}
+
+.hidden {
+  display: none;
+}
+
+.global-settings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px;
+  align-items: center;
+}
+
+.global-settings label {
+  font-weight: 500;
+}
+
+.global-settings input[type="range"] {
+  vertical-align: middle;
+  margin: 0 8px;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  margin: 30px;
+}
+
+.image-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+  padding: 12px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.image-card:hover {
+  transform: scale(1.03);
+}
+
+.image-card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.progress {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #0078ff;
+  width: 0%;
+  transition: width 0.3s;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-size: 14px;
+}
