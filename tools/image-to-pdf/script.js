@@ -18,33 +18,43 @@ input.addEventListener("change", (e) => {
 function renderPreview() {
   preview.innerHTML = "";
   images.forEach((file, i) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "img-wrapper";
+    wrapper.draggable = true;
+    wrapper.dataset.index = i;
+    wrapper.title = "Drag to reorder";
+
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
-    img.draggable = true;
-    img.dataset.index = i;
-    img.title = "Drag to reorder";
 
-    img.addEventListener("dragstart", handleDragStart);
-    img.addEventListener("dragover", handleDragOver);
-    img.addEventListener("drop", handleDrop);
+    const label = document.createElement("p");
+    label.className = "page-label";
+    label.textContent = `Page ${i + 1}`;
 
-    preview.appendChild(img);
+    wrapper.appendChild(img);
+    wrapper.appendChild(label);
+
+    wrapper.addEventListener("dragstart", handleDragStart);
+    wrapper.addEventListener("dragover", handleDragOver);
+    wrapper.addEventListener("drop", handleDrop);
+    wrapper.addEventListener("dragend", handleDragEnd);
+
+    preview.appendChild(wrapper);
   });
 }
+
 
 let draggedIndex = null;
 function handleDragStart(e) {
   draggedIndex = e.target.dataset.index;
   e.dataTransfer.effectAllowed = "move";
-  e.target.style.opacity = "0.5";
+  e.target.classList.add("dragging");
+  setTimeout(() => (e.target.style.opacity = "0.5"), 0);
 }
-function handleDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = "move";
-}
+
 function handleDrop(e) {
   e.preventDefault();
-  const targetIndex = e.target.dataset.index;
+  const targetIndex = e.target.closest(".img-wrapper")?.dataset.index;
   if (draggedIndex === null || targetIndex === undefined) return;
 
   const draggedFile = images[draggedIndex];
@@ -52,6 +62,16 @@ function handleDrop(e) {
   images.splice(targetIndex, 0, draggedFile);
   renderPreview();
   draggedIndex = null;
+}
+
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+}
+
+function handleDragEnd(e) {
+  e.target.style.opacity = "1";
 }
 
 // --- conversion logic ---
