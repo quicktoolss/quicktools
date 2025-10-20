@@ -9,20 +9,21 @@
 <body>
   <header>
     <h1>🖼️ Image Resizer</h1>
-    <p class="tagline">Resize, compress, and export images directly in your browser — batch support, presets, and download-all ZIP.</p>
+    <p class="tagline">Resize, compress, and export images directly in your browser — batch support, presets, live preview, and download-all ZIP. Files never leave your device.</p>
   </header>
 
   <main class="card">
-    <section class="uploader">
+    <section class="top-row">
       <div id="dropzone" class="dropzone">
-        <div>
+        <div class="drop-inner">
           <strong>Drag & drop images here</strong>
           <div class="hint">or <button id="chooseBtn" class="ghost">Choose files</button></div>
           <input id="fileInput" type="file" accept="image/*" multiple style="display:none" />
         </div>
       </div>
-      <div class="controls">
-        <div class="row">
+
+      <aside class="controls">
+        <div class="control-block">
           <label>Presets</label>
           <div class="preset-row">
             <button class="preset" data-w="1080" data-h="1080">Instagram 1080×1080</button>
@@ -33,7 +34,7 @@
           </div>
         </div>
 
-        <div class="row two-cols">
+        <div class="control-block two-cols">
           <div>
             <label>Width (px)</label>
             <input id="widthInput" type="number" min="1" placeholder="auto" />
@@ -44,24 +45,24 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="control-block">
           <label>Scale (%)</label>
           <input id="scaleInput" type="number" min="1" max="1000" placeholder="e.g., 50 for 50%" />
         </div>
 
-        <div class="row two-cols" style="align-items:center;">
+        <div class="control-block two-cols" style="align-items:center;">
           <label><input id="keepAspect" type="checkbox" checked /> Maintain aspect ratio</label>
           <label>Fit mode
             <select id="fitMode">
               <option value="fit">Fit (contain)</option>
               <option value="fill">Fill (cover, crop)</option>
               <option value="stretch">Stretch</option>
-              <option value="center">Center (no scale)</option>
+              <option value="center">Center</option>
             </select>
           </label>
         </div>
 
-        <div class="row">
+        <div class="control-block">
           <label>Output format</label>
           <select id="outputFormat">
             <option value="image/jpeg">JPG</option>
@@ -70,15 +71,18 @@
           </select>
         </div>
 
-        <div class="row">
-          <label>Quality (for JPG/WEBP)</label>
-          <input id="quality" type="range" min="10" max="100" step="1" value="85" />
-          <div class="small" id="qualityVal">85</div>
+        <div class="control-block">
+          <label>Quality (JPG / WEBP)</label>
+          <div class="quality-row">
+            <input id="quality" type="range" min="10" max="100" step="1" value="85" />
+            <div id="qualityVal">85</div>
+          </div>
         </div>
 
-        <div class="row">
-          <label>Target size (KB) — optional (attempt to reach size using compression; only for JPG/WEBP)</label>
+        <div class="control-block">
+          <label>Target size (KB) — optional</label>
           <input id="targetSize" type="number" min="1" placeholder="e.g., 200" />
+          <div class="small muted">Binary-search compression applied (JPG/WEBP only)</div>
         </div>
 
         <div class="actions-row">
@@ -91,12 +95,32 @@
           <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
           <div id="progressText" class="small">0%</div>
         </div>
+      </aside>
+    </section>
+
+    <section class="preview-wrap">
+      <div id="preview" class="preview"></div>
+
+      <div id="livePreview" class="live-preview" style="display:none;">
+        <div class="live-controls">
+          <div class="lp-title">Live Before / After</div>
+          <div class="lp-info" id="lpInfo">—</div>
+        </div>
+        <div class="lp-canvas-wrap">
+          <div class="lp-before" id="lpBefore"></div>
+          <div class="lp-after" id="lpAfter"></div>
+          <div id="lpSlider" class="lp-slider"></div>
+        </div>
+        <div class="lp-actions">
+          <button id="applySingle" class="primary">Apply to Selected</button>
+          <a id="downloadSingle" class="ghost" style="display:none;">⬇️ Download</a>
+        </div>
       </div>
     </section>
 
-    <section id="preview" class="preview"></section>
-
   </main>
+
+  <div id="toasts" class="toasts"></div>
 
   <footer>© 2025 QuickTools</footer>
 
