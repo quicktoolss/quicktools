@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Compressor — QuickTools</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🗜️ Image Compressor</h1>
+    <p>Compress, resize, and optimize your images instantly — all offline.</p>
+  </header>
+
+  <main>
+    <div class="upload-area" id="uploadArea">
+      <p>📂 Drag & drop or click to upload images (JPG, PNG, WebP)</p>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden />
+    </div>
+
+    <div id="controls" class="hidden">
+      <div class="global-settings">
+        <label>Global Quality:
+          <input type="range" id="globalQuality" min="10" max="100" value="80" />
+          <span id="globalQualityValue">80</span>%
+        </label>
+
+        <label>Auto Size Target (KB):
+          <input type="number" id="targetSize" min="50" placeholder="e.g. 200" />
+        </label>
+
+        <button id="compressAllBtn">Compress All</button>
+        <button id="downloadAllBtn" class="hidden">Download All (ZIP)</button>
+      </div>
+    </div>
+
+    <div id="previewGrid" class="preview-grid"></div>
+  </main>
+
+  <footer>© 2025 QuickTools. All rights reserved.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
