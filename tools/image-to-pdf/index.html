@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image → PDF Converter | QuickTools</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🖼️ Image → PDF Converter</h1>
+    <p>Select multiple images and merge them into one PDF instantly.</p>
+  </header>
+
+  <main>
+    <input type="file" id="imageInput" accept="image/*" multiple />
+    <p id="status"></p>
+    <div id="preview"></div>
+    <button id="convertBtn" disabled>Convert to PDF</button>
+    <a id="downloadLink" style="display:none;">Download PDF</a>
+    <br />
+    <a href="../../index.html" class="back-home">← Back to Home</a>
+  </main>
+
+  <!-- jsPDF library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
