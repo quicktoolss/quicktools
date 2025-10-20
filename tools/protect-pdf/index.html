@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protect PDF | QuickTools</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>🔒 Protect PDF with Password</h1>
+    <p class="subtitle">Secure your PDF instantly — fully offline and private.</p>
+
+    <div class="upload-box" id="uploadBox">
+      <input type="file" id="pdfInput" accept="application/pdf" hidden>
+      <p>📄 Drag & drop a PDF or click to browse</p>
+    </div>
+
+    <div class="controls" id="controls" style="display:none;">
+      <label>Password:</label>
+      <input type="password" id="passwordInput" placeholder="Enter password">
+
+      <label>Confirm Password:</label>
+      <input type="password" id="confirmPasswordInput" placeholder="Re-enter password">
+
+      <button id="protectBtn">Protect PDF</button>
+
+      <div class="progress">
+        <div id="progressBar"></div>
+      </div>
+
+      <a id="downloadLink" class="hidden">⬇️ Download Protected PDF</a>
+    </div>
+
+    <a href="../../index.html" class="back-link">← Back to QuickTools</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
