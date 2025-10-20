@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merge PDF Files - QuickTools</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <a href="../../index.html" class="back-link">← Back to QuickTools</a>
+    <h1>Merge PDF Files</h1>
+    <p class="subtitle">Combine, reorder, and merge your PDFs — instantly, privately, and free.</p>
+
+    <div class="upload-box" id="uploadBox">
+      <input type="file" id="pdfInput" multiple accept="application/pdf" />
+      <label for="pdfInput" class="upload-label">Choose PDFs to Merge</label>
+      <p class="hint">or drag & drop PDFs here</p>
+    </div>
+
+    <ul id="fileList" class="file-list"></ul>
+    <p id="reorderHint" class="hint reorder-hint" style="display:none;">Tip: drag to reorder files before merging</p>
+
+    <button id="mergeBtn" disabled>Merge PDFs</button>
+    <div id="progressContainer" class="progress-container" style="display:none;">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <a id="downloadLink" class="download-btn" style="display:none;">Download Merged PDF</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
