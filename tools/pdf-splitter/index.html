@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Splitter - QuickTools</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>PDF Splitter</h1>
+    <p class="subtitle">Split a PDF into multiple smaller files by range or every N pages.</p>
+
+    <input type="file" id="pdfFile" accept="application/pdf" />
+
+    <div class="options">
+      <label>
+        <input type="radio" name="splitMode" value="range" checked />
+        Split by Range (e.g. 1-3,5,7-9)
+      </label>
+      <input type="text" id="rangeInput" placeholder="Enter page ranges" />
+
+      <label>
+        <input type="radio" name="splitMode" value="every" />
+        Split Every N Pages
+      </label>
+      <input type="number" id="everyInput" placeholder="Enter N" min="1" />
+    </div>
+
+    <button id="splitBtn">Split PDF</button>
+
+    <div id="progressBar" class="progress-bar"><div class="progress"></div></div>
+    <div id="output"></div>
+
+    <a href="../../index.html" class="back-link">← Back to QuickTools</a>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
