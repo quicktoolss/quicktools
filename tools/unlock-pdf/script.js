@@ -1,5 +1,5 @@
 // Unlock PDF improved UX script
-// Uses pdf.js to open passworded PDF and pdf-lib to create a new unprotected PDF (pages rasterized to images).
+// Uses pdf.js to open passworded PDF and pdf-lib to create a new unprotected PDF (pages rasterized to images)
 
 const fileInput = document.getElementById('fileInput');
 const dropZone = document.getElementById('dropZone');
