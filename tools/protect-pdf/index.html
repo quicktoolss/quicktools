@@ -1,39 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Protect PDF | QuickTools</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Protect PDF — QuickTools</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- experimental UMD build that includes encryption support -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib-plus-encrypt@1.1.0/dist/pdf-lib-plus-encrypt.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>🔒 Protect PDF with Password</h1>
-    <p class="subtitle">Secure your PDF instantly — fully offline and private.</p>
+    <h1>🔒 Protect PDF (experimental)</h1>
+    <p class="subtitle">Add an open-password to your PDF — runs in your browser. Experimental: may fail on some PDFs.</p>
 
-    <div class="upload-box" id="uploadBox">
-      <input type="file" id="pdfInput" accept="application/pdf" hidden>
-      <p>📄 Drag & drop a PDF or click to browse</p>
+    <div id="uploadBox" class="upload-box">
+      <input id="pdfInput" type="file" accept="application/pdf" />
+      <p>Drag & drop or choose a PDF file</p>
     </div>
 
-    <div class="controls" id="controls" style="display:none;">
-      <label>Password:</label>
-      <input type="password" id="passwordInput" placeholder="Enter password">
+    <div id="controls" class="controls hidden">
+      <label>
+        Password (to open):
+        <input id="passwordInput" type="password" placeholder="Enter password" />
+      </label>
 
-      <label>Confirm Password:</label>
-      <input type="password" id="confirmPasswordInput" placeholder="Re-enter password">
+      <label>
+        Confirm password:
+        <input id="confirmPasswordInput" type="password" placeholder="Re-enter password" />
+      </label>
 
-      <button id="protectBtn">Protect PDF</button>
+      <div class="row">
+        <button id="protectBtn">Protect PDF</button>
+        <button id="fallbackZipBtn" title="Create passworded ZIP as fallback">Create Password ZIP (fallback)</button>
+      </div>
 
       <div class="progress">
         <div id="progressBar"></div>
       </div>
 
-      <a id="downloadLink" class="hidden">⬇️ Download Protected PDF</a>
+      <a id="downloadLink" class="download-btn hidden" target="_blank" rel="noopener">⬇️ Download Protected PDF</a>
+      <p id="status" class="status"></p>
     </div>
 
-    <a href="../../index.html" class="back-link">← Back to QuickTools</a>
+    <a class="back-link" href="../../index.html">← Back to QuickTools</a>
   </div>
 
   <script src="script.js"></script>
