@@ -114,46 +114,54 @@
   <footer>© 2025 QuickTools. All rights reserved.</footer>
 
   <script>
-    const tools = {
-      pdf: [
-        { name: "PDF → Image Converter", link: "tools/pdf-to-image/index.html", desc: "Convert PDF pages to JPG or PNG images." },
-        { name: "Image → PDF Converter", link: "#", desc: "Merge images into a single PDF file." },
-      ],
-      image: [
-        { name: "Image Resizer", link: "#", desc: "Resize images easily in your browser." },
-        { name: "Image Compressor", link: "#", desc: "Reduce image file size without losing quality." },
-        { name: "Image Cropper", link: "#", desc: "Crop images to custom dimensions instantly." },
-      ],
-      text: [
-        { name: "Case Converter", link: "#", desc: "Convert text to UPPERCASE, lowercase, Title Case." },
-        { name: "Word Counter", link: "#", desc: "Count words, characters, and reading time." },
-        { name: "JSON Formatter", link: "#", desc: "Format and beautify JSON instantly." },
-      ]
-    };
+  const tools = {
+    pdf: [
+      { name: "PDF → Image Converter", link: "tools/pdf-to-image/index.html", desc: "Convert PDF pages to JPG or PNG images." },
+      { name: "Image → PDF Converter", link: "#", desc: "Merge images into a single PDF file." },
+    ],
+    image: [
+      { name: "Image Resizer", link: "#", desc: "Resize images easily in your browser." },
+      { name: "Image Compressor", link: "#", desc: "Reduce image file size without losing quality." },
+      { name: "Image Cropper", link: "#", desc: "Crop images to custom dimensions instantly." },
+    ],
+    text: [
+      { name: "Case Converter", link: "#", desc: "Convert text to UPPERCASE, lowercase, Title Case." },
+      { name: "Word Counter", link: "#", desc: "Count words, characters, and reading time." },
+      { name: "JSON Formatter", link: "#", desc: "Format and beautify JSON instantly." },
+    ]
+  };
 
-    const grid = document.getElementById("toolsGrid");
-    const tabs = document.querySelectorAll(".tab");
+  const grid = document.getElementById("toolsGrid");
+  const tabs = document.querySelectorAll(".tab");
 
-    function loadCategory(cat) {
-      grid.innerHTML = "";
-      tools[cat].forEach(tool => {
-        const div = document.createElement("div");
-        div.className = "tool-card";
-        div.innerHTML = `<h3>${tool.name}</h3><p>${tool.desc}</p>`;
-        grid.appendChild(div);
-      });
-    }
+  function loadCategory(cat) {
+    grid.innerHTML = "";
+    tools[cat].forEach(tool => {
+      const a = document.createElement("a");
+      a.href = tool.link;
+      a.style.textDecoration = "none";
+      a.style.color = "inherit";
 
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        tabs.forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        loadCategory(tab.dataset.category);
-      });
+      const div = document.createElement("div");
+      div.className = "tool-card";
+      div.innerHTML = `<h3>${tool.name}</h3><p>${tool.desc}</p>`;
+
+      a.appendChild(div);
+      grid.appendChild(a);
     });
+  }
 
-    // Load default category
-    loadCategory("pdf");
-  </script>
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      loadCategory(tab.dataset.category);
+    });
+  });
+
+  // Load default category
+  loadCategory("pdf");
+</script>
+
 </body>
 </html>
