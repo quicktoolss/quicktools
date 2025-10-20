@@ -29,6 +29,27 @@ header h1 {
   font-weight: 600;
   transition: background 0.3s;
 }
+.drop-indicator {
+  width: 120px;
+  height: 6px;
+  background: linear-gradient(90deg, #0078ff, #00d4ff);
+  border-radius: 3px;
+  margin: 6px 0;
+  opacity: 0.9;
+  animation: pulse 0.8s infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    transform: scaleX(0.8);
+    opacity: 0.6;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
 #convertBtn:hover {
   background: #005ed1;
 }
