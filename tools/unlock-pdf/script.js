@@ -1,184 +1,221 @@
-(() => {
-const pdfjsLib = window['pdfjs-dist/build/pdf'];
-pdfjsLib.GlobalWorkerOptions.workerSrc = '[https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js](https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js)';
+// Unlock PDF improved UX script
+// Uses pdf.js to open passworded PDF and pdf-lib to create a new unprotected PDF (pages rasterized to images).
 
 const fileInput = document.getElementById('fileInput');
-const dropArea = document.getElementById('dropArea');
-const browseBtn = document.getElementById('browseBtn');
-const unlockBtn = document.getElementById('unlockBtn');
+const dropZone = document.getElementById('dropZone');
+const pickBtn = document.getElementById('pickBtn');
+
+const passwordSection = document.getElementById('passwordSection');
+const pwdInput = document.getElementById('pwdInput');
+const openBtn = document.getElementById('openBtn');
+const openStatus = document.getElementById('openStatus');
+
+const pagesSection = document.getElementById('pagesSection');
+const docNameEl = document.getElementById('docName');
+const pageCountEl = document.getElementById('pageCount');
+const thumbsEl = document.getElementById('thumbs');
+
+const selectAllBtn = document.getElementById('selectAllBtn');
+const invertBtn = document.getElementById('invertBtn');
 const clearBtn = document.getElementById('clearBtn');
-const passwordInput = document.getElementById('password');
+
+const scaleRange = document.getElementById('scaleRange');
+const scaleVal = document.getElementById('scaleVal');
+const qualityRange = document.getElementById('qualityRange');
+const qualityVal = document.getElementById('qualityVal');
+
+const createBtn = document.getElementById('createBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+
+const progressWrap = document.getElementById('progressWrap');
+const statusLabel = document.getElementById('statusLabel');
 const progressBar = document.getElementById('progressBar');
-const progressLabel = document.getElementById('progressLabel');
-const previewArea = document.getElementById('previewArea');
 
-let currentFile = null;
+const resultArea = document.getElementById('resultArea');
+const downloadLink = document.getElementById('downloadLink');
 
-function setProgress(p, text) {
-progressBar.style.width = Math.round(p * 100) + '%';
-progressLabel.textContent = text || (Math.round(p * 100) + '%');
-}
+let pdfData = null;
+let pdfDoc = null;         // pdf.js loaded doc
+let numPages = 0;
+let filename = 'document.pdf';
+let cancelled = false;
 
-function reset() {
-currentFile = null;
-fileInput.value = null;
-passwordInput.value = '';
-unlockBtn.disabled = true;
-previewArea.innerHTML = '';
-setProgress(0, 'Idle');
-}
+// pdf.js worker (use CDN worker)
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-dropArea.addEventListener('click', () => fileInput.click());
-browseBtn.addEventListener('click', (e) => {
-e.stopPropagation();
-fileInput.click();
+// pick button behaviour
+pickBtn.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.background = '#eef7ff'; });
+dropZone.addEventListener('dragleave', () => dropZone.style.background = ''; );
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.style.background = '';
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) handleFile(f);
 });
-
-dropArea.addEventListener('dragover', (e) => {
-e.preventDefault();
-dropArea.classList.add('dragover');
-});
-dropArea.addEventListener('dragleave', () => dropArea.classList.remove('dragover'));
-dropArea.addEventListener('drop', (e) => {
-e.preventDefault();
-dropArea.classList.remove('dragover');
-const f = e.dataTransfer.files && e.dataTransfer.files[0];
-if (f) handleFile(f);
-});
-
 fileInput.addEventListener('change', (e) => {
-const f = e.target.files && e.target.files[0];
-if (f) handleFile(f);
+  const f = e.target.files && e.target.files[0];
+  if (f) handleFile(f);
 });
 
-clearBtn.addEventListener('click', () => reset());
-
-function handleFile(file) {
-if (file.type !== 'application/pdf') {
-alert('Please provide a PDF file.');
-return;
-}
-currentFile = file;
-unlockBtn.disabled = false;
-previewArea.innerHTML = `       <div class="thumb">         <div style="font-size:14px;font-weight:700">${escapeHtml(file.name)}</div>         <div style="font-size:12px;color:var(--muted);margin-top:6px">
-          ${(file.size / 1024 / 1024).toFixed(2)} MB         </div>       </div>`;
-setProgress(0, 'Ready');
-}
-
-unlockBtn.addEventListener('click', async () => {
-if (!currentFile) return;
-unlockBtn.disabled = true;
-const password = passwordInput.value || undefined;
-
-```
-try {
-  setProgress(0.02, 'Reading file');
-  const arrayBuffer = await currentFile.arrayBuffer();
-
-  setProgress(0.05, 'Loading PDF');
-  const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer), password });
-
-  loadingTask.onPassword = (updatePassword, reason) => {
-    const msg =
-      reason === loadingTask.PasswordResponses.NEED_PASSWORD
-        ? 'Password required'
-        : 'Incorrect password';
-    const p = prompt(msg + '. Enter password:');
-    if (p === null) {
-      loadingTask.destroy();
-      throw new Error('Password required');
-    }
-    updatePassword(p);
+function handleFile(file){
+  if (!file) return;
+  if (file.type !== 'application/pdf') return alert('Please select a PDF file.');
+  filename = file.name;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    pdfData = ev.target.result;
+    // show password area
+    passwordSection.classList.remove('hidden');
+    pagesSection.classList.add('hidden');
+    resultArea.classList.add('hidden');
+    openStatus.textContent = '';
+    dropZone.innerHTML = `✅ ${file.name} · ${(file.size/1024).toFixed(1)} KB`;
   };
+  reader.readAsArrayBuffer(file);
+}
 
-  const pdf = await loadingTask.promise;
-  const numPages = pdf.numPages;
-  setProgress(0.08, `Loaded — ${numPages} page(s)`);
+openBtn.addEventListener('click', async () => {
+  if (!pdfData) return alert('Choose a PDF first.');
+  const pwd = pwdInput.value || undefined;
+  openStatus.textContent = 'Opening PDF…';
+  try {
+    // load with pdf.js; pdf.js will ask for password if required
+    const loadingTask = pdfjsLib.getDocument({ data: pdfData, password: pwd });
+    pdfDoc = await loadingTask.promise;
+    numPages = pdfDoc.numPages;
+    docNameEl.textContent = filename;
+    pageCountEl.textContent = ` — ${numPages} page${numPages > 1 ? 's' : ''}`;
+    openStatus.textContent = `Opened ${numPages} page${numPages>1?'s':''}. Rendering thumbnails...`;
+    passwordSection.classList.add('hidden');
+    pagesSection.classList.remove('hidden');
+    // render thumbnails (low-res)
+    renderThumbnails();
+  } catch (err) {
+    console.error('open error', err);
+    if (err && err.name === 'PasswordException') {
+      alert('Password required or incorrect password. Try again.');
+    } else {
+      alert('Failed to open PDF: ' + (err && err.message ? err.message : err));
+    }
+    openStatus.textContent = '';
+  }
+});
 
-  const canvases = [];
-  for (let i = 1; i <= numPages; i++) {
-    setProgress(0.08 + 0.7 * (i / numPages), `Rendering page ${i}/${numPages}`);
-    const page = await pdf.getPage(i);
-    const viewport = page.getViewport({ scale: 2 });
+async function renderThumbnails(){
+  thumbsEl.innerHTML = '';
+  // render small thumbnails at scale 0.25 for speed
+  const thumbScale = 0.25;
+  for (let i=1;i<=numPages;i++){
+    const page = await pdfDoc.getPage(i);
+    const viewport = page.getViewport({ scale: thumbScale });
     const canvas = document.createElement('canvas');
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
+    canvas.width = Math.round(viewport.width);
+    canvas.height = Math.round(viewport.height);
     const ctx = canvas.getContext('2d');
     await page.render({ canvasContext: ctx, viewport }).promise;
-    canvases.push(canvas);
-
-    const thumb = document.createElement('div');
-    thumb.className = 'thumb';
-    const smallCanvas = document.createElement('canvas');
-    const scalePreview = Math.min(300 / viewport.width, 1);
-    smallCanvas.width = viewport.width * scalePreview;
-    smallCanvas.height = viewport.height * scalePreview;
-    smallCanvas.getContext('2d').drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
-    thumb.appendChild(smallCanvas);
-
-    const label = document.createElement('div');
-    label.style.marginTop = '8px';
-    label.style.fontSize = '12px';
-    label.style.color = 'var(--muted)';
-    label.textContent = 'Page ' + i;
-    thumb.appendChild(label);
-    previewArea.appendChild(thumb);
+    const wrapper = document.createElement('label');
+    wrapper.className = 'thumb';
+    wrapper.innerHTML = `
+      <img src="${canvas.toDataURL('image/png')}" alt="page ${i}" />
+      <div class="meta"><span>Page ${i}</span><input data-page="${i}" type="checkbox" checked /></div>
+    `;
+    thumbsEl.appendChild(wrapper);
   }
-
-  setProgress(0.82, 'Assembling unlocked PDF');
-  const pdfLibDoc = await PDFLib.PDFDocument.create();
-  for (let i = 0; i < canvases.length; i++) {
-    const imgDataUrl = canvases[i].toDataURL('image/jpeg', 0.92);
-    const imgBytes = dataURLToUint8Array(imgDataUrl);
-    const jpg = await pdfLibDoc.embedJpg(imgBytes);
-    const page = pdfLibDoc.addPage([jpg.width, jpg.height]);
-    page.drawImage(jpg, { x: 0, y: 0, width: jpg.width, height: jpg.height });
-    setProgress(0.82 + 0.15 * ((i + 1) / canvases.length), `Embedding page ${i + 1}`);
-  }
-
-  const outBytes = await pdfLibDoc.save();
-  setProgress(1, 'Done');
-
-  const blob = new Blob([outBytes], { type: 'application/pdf' });
-  const url = URL.createObjectURL(blob);
-  const dl = document.createElement('a');
-  dl.href = url;
-  dl.download = currentFile.name.replace(/(\\.pdf)$/i, '') + '-unlocked.pdf';
-  dl.textContent = 'Download unlocked PDF';
-  dl.className = 'btn primary';
-  dl.style.display = 'inline-block';
-  dl.style.marginTop = '12px';
-  previewArea.appendChild(dl);
-
-  unlockBtn.disabled = false;
-} catch (err) {
-  console.error(err);
-  alert('Failed to unlock PDF: ' + err.message);
-  setProgress(0, 'Idle');
-  unlockBtn.disabled = false;
 }
-```
 
+// selection helpers
+selectAllBtn.addEventListener('click', ()=> setAllThumbs(true));
+clearBtn.addEventListener('click', ()=> setAllThumbs(false));
+invertBtn.addEventListener('click', ()=> {
+  const inputs = thumbsEl.querySelectorAll('input[type=checkbox]');
+  inputs.forEach(ch => ch.checked = !ch.checked);
+});
+function setAllThumbs(val){
+  const inputs = thumbsEl.querySelectorAll('input[type=checkbox]');
+  inputs.forEach(ch => ch.checked = val);
+}
+
+// update labels for sliders
+scaleRange.addEventListener('input', ()=> scaleVal.textContent = scaleRange.value + 'x');
+qualityRange.addEventListener('input', ()=> qualityVal.textContent = qualityRange.value + '%');
+
+// create unlocked PDF
+createBtn.addEventListener('click', async () => {
+  if (!pdfDoc) return alert('Open a PDF first.');
+  // collect selected pages
+  const checked = [...thumbsEl.querySelectorAll('input[type=checkbox]')].filter(i=>i.checked).map(i=>parseInt(i.dataset.page));
+  if (!checked.length) return alert('Select at least one page to create unlocked PDF.');
+  cancelled = false;
+  resultArea.classList.add('hidden');
+  progressWrap.classList.remove('hidden');
+  cancelBtn.classList.remove('hidden');
+  setStatus('Preparing render', 0);
+
+  try {
+    const outPdf = await PDFLib.PDFDocument.create();
+    const scale = parseFloat(scaleRange.value) || 1.5;
+    const quality = parseInt(qualityRange.value) || 85;
+    for (let idx=0; idx<checked.length; idx++){
+      if (cancelled) throw new Error('Cancelled');
+      const pageNum = checked[idx];
+      setStatus(`Rendering page ${idx+1} of ${checked.length} (original page ${pageNum})`, Math.round((idx/checked.length)*70));
+      const page = await pdfDoc.getPage(pageNum);
+      const viewport = page.getViewport({ scale });
+      // draw to canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(viewport.width);
+      canvas.height = Math.round(viewport.height);
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      // convert to jpeg blob
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', quality/100));
+      const arr = await blob.arrayBuffer();
+      // embed
+      const jpg = await outPdf.embedJpg(arr);
+      const p = outPdf.addPage([jpg.width, jpg.height]);
+      p.drawImage(jpg, { x: 0, y: 0, width: jpg.width, height: jpg.height });
+      setProgress(Math.round(((idx+1)/checked.length)*85));
+      // allow UI breath
+      await new Promise(r => setTimeout(r, 50));
+    }
+    setStatus('Saving PDF...', 90);
+    const bytes = await outPdf.save();
+    setProgress(95);
+    const outBlob = new Blob([bytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(outBlob);
+    downloadLink.href = url;
+    downloadLink.download = `unlocked_${filename}`;
+    resultArea.classList.remove('hidden');
+    setStatus('Unlocked PDF ready. Download below.', 100);
+    setProgress(100);
+    // cleanup UI
+    cancelBtn.classList.add('hidden');
+  } catch (err) {
+    if (err && err.message === 'Cancelled') {
+      setStatus('Operation canceled by user.', 0);
+    } else {
+      console.error(err);
+      alert('Failed: ' + (err && err.message ? err.message : err));
+      setStatus('Error during processing', 0);
+    }
+    cancelBtn.classList.add('hidden');
+    setProgress(0);
+  }
 });
 
-function escapeHtml(s) {
-return String(s).replace(/[&<>"']/g, (c) => ({
-'&': '&',
-'<': '<',
-'>': '>',
-'"': '"',
-"'": ''',
-}[c]));
-}
+// cancel
+cancelBtn.addEventListener('click', ()=> {
+  cancelled = true;
+  cancelBtn.disabled = true;
+  setStatus('Canceling…', 0);
+});
 
-function dataURLToUint8Array(dataURL) {
-const base64 = dataURL.split(',')[1];
-const binary = atob(base64);
-const len = binary.length;
-const u8 = new Uint8Array(len);
-for (let i = 0; i < len; i++) u8[i] = binary.charCodeAt(i);
-return u8;
+// helpers
+function setStatus(txt, pct){
+  statusLabel.textContent = txt || statusLabel.textContent;
+  setProgress(pct||0);
 }
-
-reset();
-})();
+function setProgress(pct){
+  progressBar.style.width = `${pct}%`;
+}
