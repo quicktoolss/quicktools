@@ -14,7 +14,7 @@
 
   <header>
     <h1>✂️ Image Cropper</h1>
-    <p>Crop images visually — with aspect ratios, circle mode, and instant download.</p>
+    <p>Crop, resize, or circle-crop images easily in your browser.</p>
   </header>
 
   <main>
@@ -39,8 +39,11 @@
         <button id="downloadBtn">Download</button>
       </div>
 
-      <div class="cropper-container">
-        <img id="image" alt="Upload an image" />
+      <div class="cropper-wrapper">
+        <div class="cropper-container">
+          <img id="image" alt="Upload an image" />
+        </div>
+        <p id="cropInfo" class="crop-info">Aspect: — | Size: — × — px</p>
       </div>
     </div>
   </main>
