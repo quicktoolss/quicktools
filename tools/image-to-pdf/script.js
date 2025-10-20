@@ -14,7 +14,10 @@ input.addEventListener("change", (e) => {
   convertBtn.disabled = images.length === 0;
 });
 
-// --- render image thumbnails with drag/drop ---
+let draggedIndex = null;
+let dropIndicator = document.createElement("div");
+dropIndicator.className = "drop-indicator";
+
 function renderPreview() {
   preview.innerHTML = "";
   images.forEach((file, i) => {
@@ -22,7 +25,6 @@ function renderPreview() {
     wrapper.className = "img-wrapper";
     wrapper.draggable = true;
     wrapper.dataset.index = i;
-    wrapper.title = "Drag to reorder";
 
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
@@ -43,8 +45,6 @@ function renderPreview() {
   });
 }
 
-
-let draggedIndex = null;
 function handleDragStart(e) {
   draggedIndex = e.target.dataset.index;
   e.dataTransfer.effectAllowed = "move";
@@ -52,27 +52,43 @@ function handleDragStart(e) {
   setTimeout(() => (e.target.style.opacity = "0.5"), 0);
 }
 
-function handleDrop(e) {
-  e.preventDefault();
-  const targetIndex = e.target.closest(".img-wrapper")?.dataset.index;
-  if (draggedIndex === null || targetIndex === undefined) return;
-
-  const draggedFile = images[draggedIndex];
-  images.splice(draggedIndex, 1);
-  images.splice(targetIndex, 0, draggedFile);
-  renderPreview();
-  draggedIndex = null;
-}
-
-
 function handleDragOver(e) {
   e.preventDefault();
-  e.dataTransfer.dropEffect = "move";
+  const target = e.target.closest(".img-wrapper");
+  if (!target || target.classList.contains("dragging")) return;
+
+  const targetRect = target.getBoundingClientRect();
+  const before = e.clientY < targetRect.top + targetRect.height / 2;
+
+  preview.querySelectorAll(".drop-indicator").forEach((el) => el.remove());
+  preview.insertBefore(dropIndicator, before ? target : target.nextSibling);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const target = e.target.closest(".img-wrapper");
+  if (!target) return;
+
+  const targetIndex = parseInt(target.dataset.index);
+  const draggedFile = images.splice(draggedIndex, 1)[0];
+
+  const targetRect = target.getBoundingClientRect();
+  const before = e.clientY < targetRect.top + targetRect.height / 2;
+
+  const insertAt = before ? targetIndex : targetIndex + 1;
+  images.splice(insertAt, 0, draggedFile);
+
+  preview.querySelectorAll(".drop-indicator").forEach((el) => el.remove());
+  renderPreview();
 }
 
 function handleDragEnd(e) {
   e.target.style.opacity = "1";
+  e.target.classList.remove("dragging");
+  preview.querySelectorAll(".drop-indicator").forEach((el) => el.remove());
 }
+
+
 
 // --- conversion logic ---
 convertBtn.addEventListener("click", async () => {
