@@ -1,68 +1,82 @@
 <!doctype html>
-
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Unlock PDF — QuickTools style</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- PDF.js (for loading encrypted PDFs & rendering pages) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
-  <!-- pdf-lib (for assembling a new PDF) -->
-  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <title>Unlock PDF — QuickTools</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <!-- pdf-lib -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
 </head>
 <body>
-  <div class="app">
+  <div class="page">
     <header class="topbar">
-      <div class="brand">QuickTools — <strong>Unlock PDF</strong></div>
-      <div class="sub">Remove password protection locally (client-side)</div>
+      <a class="back" href="../../index.html">← Back to QuickTools</a>
+      <h1>🔓 Unlock PDF (Browser)</h1>
+      <p class="lead">Open a passworded PDF (enter password), pick pages, and create a new unprotected PDF — all in your browser.</p>
     </header>
 
-```
-<main class="card">
-  <div class="drop" id="dropArea">
-    <input id="fileInput" type="file" accept="application/pdf" hidden />
-    <div class="drop-content">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M8 7l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div class="drop-title">Drag & drop a PDF here, or <button id="browseBtn" class="link">browse</button></div>
-      <div class="drop-sub">We process files locally in your browser. No upload required.</div>
-    </div>
-  </div>
+    <main class="card">
+      <section id="uploader" class="uploader">
+        <input id="fileInput" type="file" accept="application/pdf" />
+        <div id="dropZone" class="dropzone">
+          <div class="dz-inner">
+            <strong>Drag & drop</strong> or <button id="pickBtn" class="link-btn">choose a PDF</button>
+            <div class="muted">Your file never leaves your browser.</div>
+          </div>
+        </div>
+      </section>
 
-  <div class="form-row">
-    <label for="password">Password (if PDF is protected)</label>
-    <input id="password" type="password" placeholder="Enter password (if known)" />
-  </div>
+      <section id="passwordSection" class="panel hidden">
+        <label>Enter password to open file</label>
+        <div class="row">
+          <input id="pwdInput" type="password" placeholder="PDF password" />
+          <button id="openBtn" class="primary">Open PDF</button>
+        </div>
+        <div id="openStatus" class="muted"></div>
+      </section>
 
-  <div class="actions">
-    <button id="unlockBtn" class="btn primary" disabled>Unlock PDF</button>
-    <button id="clearBtn" class="btn ghost">Clear</button>
-  </div>
+      <section id="pagesSection" class="panel hidden">
+        <div class="panel-header">
+          <div><strong id="docName">—</strong> <span id="pageCount" class="muted"></span></div>
+          <div class="controls-inline">
+            <button id="selectAllBtn" class="small">Select all</button>
+            <button id="invertBtn" class="small">Invert</button>
+            <button id="clearBtn" class="small">Clear</button>
+          </div>
+        </div>
 
-  <div class="progress-wrap" aria-hidden="true">
-    <div class="progress-label" id="progressLabel">Idle</div>
-    <div class="progress">
-      <div id="progressBar" class="progress-bar"></div>
-    </div>
-  </div>
+        <div id="thumbs" class="thumb-grid" aria-live="polite"></div>
 
-  <div id="previewArea" class="preview"></div>
+        <div class="settings-row">
+          <label>Render scale (page DPI): <input id="scaleRange" type="range" min="1" max="3" step="0.25" value="1.5" /> <span id="scaleVal">1.5x</span></label>
+          <label>JPEG quality: <input id="qualityRange" type="range" min="50" max="95" step="5" value="85" /> <span id="qualityVal">85%</span></label>
+        </div>
 
-  <div class="footnote">Note: For maximum compatibility this tool uses page rendering (PDF→images→PDF). Text may not remain selectable for some files. Works entirely in your browser.</div>
-</main>
+        <div class="row" style="margin-top:12px;">
+          <button id="createBtn" class="primary">Create Unlocked PDF</button>
+          <button id="cancelBtn" class="danger hidden">Cancel</button>
+        </div>
 
-<footer class="footer">
-  <small>Built to resemble your QuickTools UI — responsive, fast, and local.</small>
-</footer>
-```
+        <div class="progress-wrap hidden" id="progressWrap">
+          <div class="progress-label" id="statusLabel">Preparing…</div>
+          <div class="progress">
+            <div id="progressBar"></div>
+          </div>
+        </div>
 
+        <div id="resultArea" class="hidden">
+          <a id="downloadLink" class="download-btn" href="#" download>⬇️ Download unlocked PDF</a>
+          <p class="muted note">Note: output pages are images — text/search and form fields are not preserved.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">© 2025 QuickTools — Processing happens in your browser.</footer>
   </div>
 
   <script src="script.js"></script>
-
 </body>
 </html>
