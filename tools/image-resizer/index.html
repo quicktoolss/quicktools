@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Image Resizer — QuickTools</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🖼️ Image Resizer</h1>
+    <p class="tagline">Resize, compress, and export images directly in your browser — batch support, presets, and download-all ZIP.</p>
+  </header>
+
+  <main class="card">
+    <section class="uploader">
+      <div id="dropzone" class="dropzone">
+        <div>
+          <strong>Drag & drop images here</strong>
+          <div class="hint">or <button id="chooseBtn" class="ghost">Choose files</button></div>
+          <input id="fileInput" type="file" accept="image/*" multiple style="display:none" />
+        </div>
+      </div>
+      <div class="controls">
+        <div class="row">
+          <label>Presets</label>
+          <div class="preset-row">
+            <button class="preset" data-w="1080" data-h="1080">Instagram 1080×1080</button>
+            <button class="preset" data-w="1920" data-h="1080">1080p</button>
+            <button class="preset" data-w="1280" data-h="720">720p</button>
+            <button class="preset" data-w="1024" data-h="1024">Square 1024</button>
+            <button class="preset" data-w="" data-h="">Original</button>
+          </div>
+        </div>
+
+        <div class="row two-cols">
+          <div>
+            <label>Width (px)</label>
+            <input id="widthInput" type="number" min="1" placeholder="auto" />
+          </div>
+          <div>
+            <label>Height (px)</label>
+            <input id="heightInput" type="number" min="1" placeholder="auto" />
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Scale (%)</label>
+          <input id="scaleInput" type="number" min="1" max="1000" placeholder="e.g., 50 for 50%" />
+        </div>
+
+        <div class="row two-cols" style="align-items:center;">
+          <label><input id="keepAspect" type="checkbox" checked /> Maintain aspect ratio</label>
+          <label>Fit mode
+            <select id="fitMode">
+              <option value="fit">Fit (contain)</option>
+              <option value="fill">Fill (cover, crop)</option>
+              <option value="stretch">Stretch</option>
+              <option value="center">Center (no scale)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Output format</label>
+          <select id="outputFormat">
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WEBP</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label>Quality (for JPG/WEBP)</label>
+          <input id="quality" type="range" min="10" max="100" step="1" value="85" />
+          <div class="small" id="qualityVal">85</div>
+        </div>
+
+        <div class="row">
+          <label>Target size (KB) — optional (attempt to reach size using compression; only for JPG/WEBP)</label>
+          <input id="targetSize" type="number" min="1" placeholder="e.g., 200" />
+        </div>
+
+        <div class="actions-row">
+          <button id="processAll" class="primary">Resize All</button>
+          <button id="clearAll" class="ghost">Clear</button>
+          <a id="downloadZip" class="ghost" style="display:none;">⬇️ Download All (ZIP)</a>
+        </div>
+
+        <div id="progressWrap" style="display:none; margin-top:12px;">
+          <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
+          <div id="progressText" class="small">0%</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="preview" class="preview"></section>
+
+  </main>
+
+  <footer>© 2025 QuickTools</footer>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
