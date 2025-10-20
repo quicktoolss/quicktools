@@ -3,10 +3,8 @@ const fileInput = document.getElementById('fileInput');
 const cropContainer = document.getElementById('cropContainer');
 const image = document.getElementById('image');
 const aspectSelect = document.getElementById('aspectSelect');
-const circleCrop = document.getElementById('circleCrop');
-const zoomRange = document.getElementById('zoomRange');
-const previewCanvas = document.getElementById('previewCanvas');
-const dimensions = document.getElementById('dimensions');
+const circleMode = document.getElementById('circleMode');
+const resetBtn = document.getElementById('resetBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 
 let cropper;
@@ -37,13 +35,11 @@ function initCropper() {
   if (cropper) cropper.destroy();
   cropper = new Cropper(image, {
     viewMode: 1,
-    background: false,
     autoCropArea: 1,
+    background: false,
+    zoomable: true,
     ready() {
-      updatePreview();
-    },
-    crop() {
-      updatePreview();
+      document.querySelector('.cropper-container').classList.remove('circle');
     }
   });
 }
@@ -57,34 +53,33 @@ aspectSelect.addEventListener('change', () => {
   }
 });
 
-zoomRange.addEventListener('input', e => {
-  cropper.zoomTo(parseFloat(e.target.value));
+circleMode.addEventListener('change', () => {
+  const container = document.querySelector('.cropper-container');
+  if (circleMode.checked) container.classList.add('circle');
+  else container.classList.remove('circle');
 });
 
-circleCrop.addEventListener('change', updatePreview);
-
-function updatePreview() {
-  const canvas = cropper.getCroppedCanvas();
-  if (!canvas) return;
-  const ctx = previewCanvas.getContext('2d');
-  previewCanvas.width = canvas.width;
-  previewCanvas.height = canvas.height;
-
-  if (circleCrop.checked) {
-    ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 2, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.clip();
-  }
-  ctx.drawImage(canvas, 0, 0);
-  dimensions.textContent = `${canvas.width} × ${canvas.height}px`;
-}
+resetBtn.addEventListener('click', () => cropper.reset());
 
 downloadBtn.addEventListener('click', () => {
   const canvas = cropper.getCroppedCanvas();
   if (!canvas) return;
+  const downloadCanvas = document.createElement('canvas');
+  const size = Math.min(canvas.width, canvas.height);
+  downloadCanvas.width = size;
+  downloadCanvas.height = size;
+  const ctx = downloadCanvas.getContext('2d');
+
+  if (circleMode.checked) {
+    ctx.beginPath();
+    ctx.arc(size/2, size/2, size/2, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.clip();
+  }
+
+  ctx.drawImage(canvas, (canvas.width - size)/2, (canvas.height - size)/2, size, size, 0, 0, size, size);
   const link = document.createElement('a');
-  link.download = circleCrop.checked ? 'cropped_circle.png' : 'cropped.png';
-  link.href = previewCanvas.toDataURL('image/png');
+  link.download = circleMode.checked ? 'cropped_circle.png' : 'cropped.png';
+  link.href = downloadCanvas.toDataURL('image/png');
   link.click();
 });
