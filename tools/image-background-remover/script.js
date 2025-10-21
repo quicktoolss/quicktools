@@ -1,110 +1,112 @@
 const fileInput = document.getElementById("fileInput");
-const outputCanvas = document.getElementById("outputCanvas");
 const previewContainer = document.getElementById("preview-container");
-const progressContainer = document.getElementById("progressContainer");
-const progressBar = document.getElementById("progressBar");
-const progressText = document.getElementById("progressText");
-const downloadBtn = document.getElementById("downloadBtn");
-const bgToggle = document.getElementById("bgToggle");
+const bgColorInput = document.getElementById("bgColor");
+const toleranceInput = document.getElementById("tolerance");
 
-let model;
+let images = [];
 
-// Update progress bar
-function updateProgress(percent, text) {
-  progressBar.style.width = percent + "%";
-  progressText.textContent = text;
-}
-
-// Load U²-Net TFJS model
-async function loadModel() {
-  if (!model) {
-    updateProgress(10, "Loading AI model...");
-    model = await tf.loadGraphModel("model/model.json"); // place your u2netp tfjs model in model/ folder
-    updateProgress(30, "Model loaded");
+fileInput.addEventListener("change", (e)=>{
+  images = [];
+  previewContainer.innerHTML = "";
+  const files = e.target.files;
+  for(let file of files){
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      const img = new Image();
+      img.src = ev.target.result;
+      img.onload = ()=>{
+        addPreview(img, file.name);
+        images.push(img);
+      };
+    };
+    reader.readAsDataURL(file);
   }
-  return model;
-}
-
-// Resize image to model input
-function preprocessImage(img) {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  const size = 320; // u2netp input
-  canvas.width = size;
-  canvas.height = size;
-  ctx.drawImage(img, 0, 0, size, size);
-  let tensor = tf.browser.fromPixels(canvas).toFloat();
-  tensor = tensor.div(255.0).expandDims(0); // [1,320,320,3]
-  return tensor;
-}
-
-async function renderMask(img, maskTensor, whiteBg=false) {
-  const canvas = outputCanvas;
-  const ctx = canvas.getContext("2d");
-  canvas.width = img.width;
-  canvas.height = img.height;
-
-  // Draw original image first
-  ctx.drawImage(img, 0, 0, img.width, img.height);
-  const imageData = ctx.getImageData(0, 0, img.width, img.height);
-
-  // Get mask as 2D array
-  const mask2D = await maskTensor.squeeze().array(); // [H,W]
-
-  for (let y=0; y<img.height; y++) {
-    const maskY = Math.floor(y * mask2D.length / img.height);
-    for (let x=0; x<img.width; x++) {
-      const maskX = Math.floor(x * mask2D[0].length / img.width);
-      const alpha = mask2D[maskY][maskX]; // 0..1
-      const i = (y*img.width + x)*4;
-
-      if (!whiteBg) {
-        imageData.data[i+3] = Math.floor(alpha*255);
-      } else {
-        imageData.data[i+3] = 255;
-      }
-    }
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-}
-
-fileInput.addEventListener("change", async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const img = new Image();
-  img.src = URL.createObjectURL(file);
-  previewContainer.classList.remove("hidden");
-  progressContainer.classList.remove("hidden");
-  updateProgress(20, "Loading image...");
-
-  img.onload = async () => {
-    const model = await loadModel();
-    updateProgress(50, "Processing...");
-
-    const tensor = preprocessImage(img);
-    const mask = model.predict(tensor); // [1,320,320,1]
-    updateProgress(80, "Rendering result...");
-
-    // Draw original image to get pixel data
-    const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = img.width; tempCanvas.height = img.height;
-    const tempCtx = tempCanvas.getContext("2d");
-    tempCtx.drawImage(img,0,0);
-    window.imgData = tempCtx.getImageData(0,0,img.width,img.height);
-
-    renderMask(img, mask, bgToggle.checked);
-    updateProgress(100, "Done!");
-    setTimeout(()=>progressContainer.classList.add("hidden"), 500);
-
-    bgToggle.addEventListener("change", ()=>renderMask(img, mask, bgToggle.checked));
-  };
 });
 
-downloadBtn.addEventListener("click", ()=>{
+// Add preview canvas and download button
+function addPreview(img, name){
+  const container = document.createElement("div");
+  container.className = "preview-item";
+
+  const canvas = document.createElement("canvas");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img,0,0);
+
+  const removeBtn = document.createElement("button");
+  removeBtn.textContent = "Remove BG";
+  removeBtn.onclick = ()=>removeBackground(canvas, img);
+
+  const downloadBtn = document.createElement("button");
+  downloadBtn.textContent = "Download";
+  downloadBtn.onclick = ()=>downloadCanvas(canvas, name);
+
+  container.appendChild(canvas);
+  container.appendChild(removeBtn);
+  container.appendChild(downloadBtn);
+  previewContainer.appendChild(container);
+}
+
+// Remove background based on selected color and tolerance
+function removeBackground(canvas, img){
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img,0,0);
+  const imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+  const data = imageData.data;
+  const bgColor = hexToRgb(bgColorInput.value);
+  const tol = parseInt(toleranceInput.value);
+
+  for(let i=0;i<data.length;i+=4){
+    if(colorDistance({r:data[i],g:data[i+1],b:data[i+2]}, bgColor)<=tol){
+      data[i+3]=0; // transparent
+    }
+  }
+  ctx.putImageData(imageData,0,0);
+}
+
+// Download canvas as PNG
+function downloadCanvas(canvas, name){
   const link = document.createElement("a");
-  link.download = "background_removed.png";
-  link.href = outputCanvas.toDataURL("image/png");
+  link.download = "bg_removed_" + name;
+  link.href = canvas.toDataURL("image/png");
   link.click();
+}
+
+// Convert hex to RGB
+function hexToRgb(hex){
+  const bigint = parseInt(hex.replace("#",""),16);
+  return { r:(bigint>>16)&255, g:(bigint>>8)&255, b: bigint&255};
+}
+
+// Euclidean distance
+function colorDistance(c1,c2){
+  return Math.sqrt((c1.r-c2.r)**2 + (c1.g-c2.g)**2 + (c1.b-c2.b)**2);
+}
+
+// Live update when user changes color or tolerance
+bgColorInput.addEventListener("input", updateAll);
+toleranceInput.addEventListener("input", updateAll);
+
+function updateAll(){
+  const items = document.querySelectorAll(".preview-item canvas");
+  images.forEach((img,i)=>{
+    removeBackground(items[i], img);
+  });
+}
+
+const downloadAllBtn = document.getElementById("downloadAllBtn");
+
+downloadAllBtn.addEventListener("click", async ()=>{
+  const zip = new JSZip();
+  const items = document.querySelectorAll(".preview-item canvas");
+
+  items.forEach((canvas, idx)=>{
+    const dataURL = canvas.toDataURL("image/png");
+    const base64 = dataURL.split(',')[1];
+    zip.file(`bg_removed_${idx+1}.png`, base64, {base64:true});
+  });
+
+  const content = await zip.generateAsync({type:"blob"});
+  saveAs(content, "bg_removed_images.zip");
 });
