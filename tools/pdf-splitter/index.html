@@ -9,39 +9,43 @@
 <body>
 
 <div class="tool-card">
-  <h2>PDF Splitter</h2>
+  <h2>QuickTools PDF Splitter</h2>
 
   <!-- Back to QuickTools -->
   <div class="back-link">
     <a href="https://quicktoolss.github.io/quicktools/" target="_blank">&larr; Back to QuickTools</a>
   </div>
 
+  <!-- Upload -->
   <div class="upload-area" id="uploadArea">
     <p>Drag & Drop PDFs here or <input type="file" id="fileInput" multiple accept="application/pdf"></p>
   </div>
 
+  <!-- Split mode selection -->
   <div class="split-mode">
     <label for="modeSelect">Split Mode:</label>
     <select id="modeSelect">
       <option value="nPages">By N Pages</option>
       <option value="fileSize">By File Size (MB)</option>
-      <option value="range">By Range</option>
+      <option value="range">By Page Range</option>
+      <option value="multiRange">Multiple Ranges</option>
       <option value="allPages">Individual Pages</option>
       <option value="splitAll">Split All Together</option>
     </select>
   </div>
 
-  <div class="mode-settings" id="modeSettings">
-    <!-- Dynamic settings per mode -->
-  </div>
+  <!-- Mode-specific settings -->
+  <div class="mode-settings" id="modeSettings"></div>
 
   <!-- Estimated splits preview -->
   <div id="previewSplits" style="margin-bottom:10px;color:#555;"></div>
 
   <button id="startSplit">Start Split</button>
 
+  <!-- File list and progress -->
   <div id="fileList"></div>
 
+  <!-- Download all as ZIP -->
   <button id="downloadAll" style="display:none;">Download All as ZIP</button>
 </div>
 
