@@ -38,27 +38,31 @@ function preprocessImage(img) {
   return tensor;
 }
 
-// Render mask to original image size
 async function renderMask(img, maskTensor, whiteBg=false) {
   const canvas = outputCanvas;
   const ctx = canvas.getContext("2d");
   canvas.width = img.width;
   canvas.height = img.height;
 
-  const mask = await maskTensor.squeeze().array();
-  const imageData = ctx.createImageData(img.width, img.height);
+  // Draw original image first
+  ctx.drawImage(img, 0, 0, img.width, img.height);
+  const imageData = ctx.getImageData(0, 0, img.width, img.height);
+
+  // Get mask as 2D array
+  const mask2D = await maskTensor.squeeze().array(); // [H,W]
 
   for (let y=0; y<img.height; y++) {
-    const maskY = Math.floor(y * mask.length / img.height);
+    const maskY = Math.floor(y * mask2D.length / img.height);
     for (let x=0; x<img.width; x++) {
-      const maskX = Math.floor(x * mask[0].length / img.width);
-      const alpha = mask[maskY][maskX]; // 0..1
+      const maskX = Math.floor(x * mask2D[0].length / img.width);
+      const alpha = mask2D[maskY][maskX]; // 0..1
       const i = (y*img.width + x)*4;
-      // Draw original pixel
-      imageData.data[i] = imgData.data[i];
-      imageData.data[i+1] = imgData.data[i+1];
-      imageData.data[i+2] = imgData.data[i+2];
-      imageData.data[i+3] = whiteBg ? 255 : Math.floor(alpha*255);
+
+      if (!whiteBg) {
+        imageData.data[i+3] = Math.floor(alpha*255);
+      } else {
+        imageData.data[i+3] = 255;
+      }
     }
   }
 
