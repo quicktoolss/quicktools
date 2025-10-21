@@ -1,44 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Background Remover — QuickTools</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batch Background Remover — QuickTools (JS Only)</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>🧩 Image Background Remover</h1>
-    <p class="tagline">Remove backgrounds from any image directly in your browser.</p>
-    <a href="/quicktools/index.html" class="back-link">← Back to QuickTools</a>
-  </header>
+<header>
+  <h1>🧩 Batch Background Remover</h1>
+  <p class="tagline">Remove solid color backgrounds directly in your browser — fully interactive!</p>
+  <a href="/quicktools/index.html" class="back-link">← Back to QuickTools</a>
+</header>
 
-  <main>
-    <div class="upload-box" id="uploadBox">
-      <input type="file" id="fileInput" accept="image/*">
-      <label for="fileInput" class="upload-label">📤 Choose or Drag Image</label>
-    </div>
+<main>
+  <div class="upload-box">
+    <input type="file" id="fileInput" accept="image/*" multiple>
+    <label for="fileInput" class="upload-label">📤 Choose or Drag Images</label>
+  </div>
 
-    <div class="progress-container hidden" id="progressContainer">
-      <div class="progress-bar" id="progressBar"></div>
-      <p id="progressText">Processing...</p>
-    </div>
 
-    <div id="preview-container" class="hidden">
-      <h3>Preview</h3>
-      <canvas id="outputCanvas"></canvas>
-      <div class="bg-toggle">
-        <label><input type="checkbox" id="bgToggle"> Show White Background</label>
-      </div>
-      <button id="downloadBtn">Download PNG</button>
-    </div>
-  </main>
+  <div class="controls">
+  <label>Background Color: <input type="color" id="bgColor" value="#ffffff"></label>
+  <label>Tolerance: <input type="range" id="tolerance" min="0" max="255" value="60"></label>
+  <button id="downloadAllBtn">Download All as ZIP</button>
+  </div>
 
-  <footer>
-    <p>© 2025 QuickTools — AI-powered background removal in your browser.</p>
-  </footer>
+   <button id="downloadAllBtn">Download All as ZIP</button>
 
-  <script src="script.js"></script>
+  <div id="preview-container"></div>
+</main>
+
+<footer>
+<p>© 2025 QuickTools — Fast JS-only background remover.</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
