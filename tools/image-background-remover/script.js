@@ -20,7 +20,7 @@ async function loadModel() {
   if (!model) {
     progressContainer.classList.remove("hidden");
     updateProgress(10, "Loading AI model...");
-    model = await deeplab.load({ base: 'mobilenetv2', quantizationBytes: 2 });
+    model = await deeplab.load({ base: 'pascal', quantizationBytes: 2 });
     updateProgress(30, "Model loaded");
   }
   return model;
