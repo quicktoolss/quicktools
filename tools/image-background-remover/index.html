@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Background Remover — QuickTools</title>
   <link rel="stylesheet" href="style.css">
-  <!-- TensorFlow.js + DeepLab -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/deeplab"></script>
 </head>
 <body>
   <header>
     <h1>🧩 Image Background Remover</h1>
-    <p class="tagline">Remove backgrounds from images directly in your browser — fast and private.</p>
+    <p class="tagline">Remove backgrounds from any image directly in your browser.</p>
     <a href="/quicktools/index.html" class="back-link">← Back to QuickTools</a>
   </header>
 
@@ -29,16 +27,11 @@
 
     <div id="preview-container" class="hidden">
       <h3>Preview</h3>
-      <div class="image-area">
-        <img id="inputImage" alt="Original">
-        <canvas id="outputCanvas"></canvas>
-      </div>
-
+      <canvas id="outputCanvas"></canvas>
       <div class="bg-toggle">
         <label><input type="checkbox" id="bgToggle"> Show White Background</label>
       </div>
-
-      <button id="downloadBtn">Download Transparent PNG</button>
+      <button id="downloadBtn">Download PNG</button>
     </div>
   </main>
 
