@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Background Remover — QuickTools</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+</head>
+<body>
+  <header>
+    <h1>🧩 Image Background Remover</h1>
+    <p class="tagline">Remove backgrounds from images directly in your browser — 100% private, no uploads.</p>
+    <a href="/index.html" class="back-link">← Back to QuickTools</a>
+  </header>
+
+  <main>
+    <div class="upload-box" id="uploadBox">
+      <input type="file" id="fileInput" accept="image/*" />
+      <label for="fileInput" class="upload-label">📤 Choose or Drag Image</label>
+    </div>
+
+    <div id="preview-container" class="hidden">
+      <h3>Preview</h3>
+      <div class="image-area">
+        <img id="inputImage" alt="Original" />
+        <canvas id="outputCanvas"></canvas>
+      </div>
+
+      <button id="downloadBtn">Download Transparent PNG</button>
+    </div>
+
+    <div id="loading" class="hidden">
+      <div class="spinner"></div>
+      <p>Processing image, please wait...</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 QuickTools — AI-powered background removal in your browser.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
