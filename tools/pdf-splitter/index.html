@@ -1,57 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QuickTools PDF Splitter</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PDF Splitter | QuickTools</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- pdf.js for previews -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <!-- pdf-lib for PDF manipulation -->
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <!-- jszip for zip downloads -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <a class="back" href="https://quicktools.click" target="_blank" rel="noopener">← Back to QuickTools</a>
+        <h1>QuickTools • PDF Splitter</h1>
+      </div>
+    </div>
+  </header>
 
-<div class="tool-card">
-  <h2>QuickTools PDF Splitter</h2>
+  <main class="container">
+    <section class="uploader card">
+      <div class="uploader-row">
+        <label class="file-chooser">
+          <input id="pdfInput" type="file" accept="application/pdf" multiple />
+          <span class="btn upload-btn">Upload PDF(s)</span>
+        </label>
 
-  <!-- Back to QuickTools -->
-  <div class="back-link">
-    <a href="../../index.html" target="_blank">&larr; Back to QuickTools</a>
-  </div>
+        <div class="actions">
+          <button id="removeAll" class="btn danger" disabled>Remove All</button>
+          <button id="clearResults" class="btn" disabled>Clear Results</button>
+        </div>
+      </div>
+      <p class="muted">Drag & drop supported — upload one or multiple PDFs.</p>
+    </section>
 
-  <!-- Upload -->
-  <div class="upload-area" id="uploadArea">
-    <p>Drag & Drop PDFs here or <input type="file" id="fileInput" multiple accept="application/pdf"></p>
-  </div>
+    <section id="previewPanel" class="card preview-panel hidden">
+      <h2>Files & Previews</h2>
+      <div id="fileGrid" class="file-grid"></div>
+    </section>
 
-  <!-- Split mode selection -->
-  <div class="split-mode">
-    <label for="modeSelect">Split Mode:</label>
-    <select id="modeSelect">
-      <option value="nPages">By N Pages</option>
-      <option value="fileSize">By File Size (MB)</option>
-      <option value="range">By Page Range</option>
-      <option value="multiRange">Multiple Ranges</option>
-      <option value="allPages">Individual Pages</option>
-      <option value="splitAll">Split All Together</option>
-    </select>
-  </div>
+    <section id="options" class="card hidden">
+      <h2>Split Options</h2>
 
-  <!-- Mode-specific settings -->
-  <div class="mode-settings" id="modeSettings"></div>
+      <div class="option-row">
+        <label>Mode</label>
+        <select id="modeSelect">
+          <option value="nPages">By N Pages</option>
+          <option value="fileSize">By File Size (MB)</option>
+          <option value="range">By Page Range (single)</option>
+          <option value="multiRange">Multiple Ranges (comma)</option>
+          <option value="allPages">Split All Pages Individually</option>
+          <option value="none">No Split (Keep Original)</option>
+        </select>
+      </div>
 
-  <!-- Estimated splits preview -->
-  <div id="previewSplits" style="margin-bottom:10px;color:#555;"></div>
+      <div id="modeControls" class="mode-controls">
+        <!-- dynamic controls injected here -->
+      </div>
 
-  <button id="startSplit">Start Split</button>
+      <div id="estimate" class="muted"></div>
 
-  <!-- File list and progress -->
-  <div id="fileList"></div>
+      <div class="action-row">
+        <button id="startSplit" class="btn primary" disabled>Start Split</button>
+        <button id="downloadZip" class="btn" style="display:none">Download All as ZIP</button>
+      </div>
+    </section>
 
-  <!-- Download all as ZIP -->
-  <button id="downloadAll" style="display:none;">Download All as ZIP</button>
-</div>
+    <section id="resultsPanel" class="card hidden">
+      <h2>Results</h2>
+      <div id="resultsList" class="results-list"></div>
+    </section>
+  </main>
 
-<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-<script src="script.js"></script>
+  <footer class="footer">
+    <p>© QuickTools • Browser-based PDF utilities — no upload to server</p>
+  </footer>
 
+  <!-- App script -->
+  <script src="script.js"></script>
 </body>
 </html>
