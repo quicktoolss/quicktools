@@ -27,34 +27,40 @@ async function loadModel() {
   return model;
 }
 
-// Render mask to canvas
-function renderCanvasWithMask(mask, whiteBg = false) {
+function renderCanvasWithMask(segmentation, whiteBg = false) {
   const canvas = outputCanvas;
   const ctx = canvas.getContext("2d");
   canvas.width = inputImage.width;
   canvas.height = inputImage.height;
 
-  // Clear or fill white background
-  if (whiteBg) ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+  // Draw input image first
   ctx.drawImage(inputImage, 0, 0, canvas.width, canvas.height);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const maskData = segmentation.data; // Flat Int32Array
+  const maskWidth = segmentation.width;
+  const maskHeight = segmentation.height;
+
   for (let y = 0; y < canvas.height; y++) {
+    const maskY = Math.floor(y * maskHeight / canvas.height);
     for (let x = 0; x < canvas.width; x++) {
+      const maskX = Math.floor(x * maskWidth / canvas.width);
+      const maskIndex = maskY * maskWidth + maskX;
+      const isForeground = maskData[maskIndex] !== 0; // 0 = background, non-zero = foreground
+
       const i = (y * canvas.width + x) * 4;
-      const mY = Math.floor((y / canvas.height) * mask.length);
-      const mX = Math.floor((x / canvas.width) * mask[0].length);
-      const val = mask[mY][mX] === 15 ? 255 : 0; // 15 = person class in DeepLab
-      if (!whiteBg) imageData.data[i + 3] = val;
-      else imageData.data[i + 3] = 255;
+      if (!whiteBg) {
+        imageData.data[i + 3] = isForeground ? 255 : 0; // alpha channel
+      } else {
+        imageData.data[i + 3] = 255; // fully opaque for white background
+      }
     }
   }
+
   ctx.putImageData(imageData, 0, 0);
 }
 
-// Handle image upload
+
 fileInput.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -64,24 +70,23 @@ fileInput.addEventListener("change", async (e) => {
     inputImage.src = ev.target.result;
     previewContainer.classList.remove("hidden");
     progressContainer.classList.remove("hidden");
-    updateProgress(40, "Preparing image...");
+    updateProgress(10, "Loading image...");
 
     inputImage.onload = async () => {
       const model = await loadModel();
+      updateProgress(50, "Running AI segmentation...");
 
-      updateProgress(60, "Running AI...");
       const segmentation = await model.segment(inputImage);
-      const mask = segmentation.segmentationMap;
 
-      updateProgress(80, "Rendering...");
-      renderCanvasWithMask(mask, bgToggle.checked);
+      updateProgress(80, "Rendering result...");
+      renderCanvasWithMask(segmentation, bgToggle.checked);
 
       updateProgress(100, "Done!");
       setTimeout(() => progressContainer.classList.add("hidden"), 500);
 
-      // Update toggle in real-time
+      // Re-render when toggle changes
       bgToggle.addEventListener("change", () => {
-        renderCanvasWithMask(mask, bgToggle.checked);
+        renderCanvasWithMask(segmentation, bgToggle.checked);
       });
     };
   };
