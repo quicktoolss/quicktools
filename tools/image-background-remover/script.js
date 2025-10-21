@@ -1,5 +1,4 @@
 const fileInput = document.getElementById("fileInput");
-const inputImage = document.getElementById("inputImage");
 const outputCanvas = document.getElementById("outputCanvas");
 const previewContainer = document.getElementById("preview-container");
 const progressContainer = document.getElementById("progressContainer");
@@ -10,89 +9,96 @@ const bgToggle = document.getElementById("bgToggle");
 
 let model;
 
+// Update progress bar
 function updateProgress(percent, text) {
   progressBar.style.width = percent + "%";
   progressText.textContent = text;
 }
 
-// Load DeepLab model
+// Load U²-Net TFJS model
 async function loadModel() {
   if (!model) {
-    progressContainer.classList.remove("hidden");
     updateProgress(10, "Loading AI model...");
-    model = await deeplab.load({ base: 'ade20k', quantizationBytes: 4 });
+    model = await tf.loadGraphModel("model/model.json"); // place your u2netp tfjs model in model/ folder
     updateProgress(30, "Model loaded");
   }
   return model;
 }
 
-// Render mask to canvas
-function renderCanvasWithMask(segmentation, whiteBg = false) {
+// Resize image to model input
+function preprocessImage(img) {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const size = 320; // u2netp input
+  canvas.width = size;
+  canvas.height = size;
+  ctx.drawImage(img, 0, 0, size, size);
+  let tensor = tf.browser.fromPixels(canvas).toFloat();
+  tensor = tensor.div(255.0).expandDims(0); // [1,320,320,3]
+  return tensor;
+}
+
+// Render mask to original image size
+async function renderMask(img, maskTensor, whiteBg=false) {
   const canvas = outputCanvas;
   const ctx = canvas.getContext("2d");
-  canvas.width = inputImage.width;
-  canvas.height = inputImage.height;
+  canvas.width = img.width;
+  canvas.height = img.height;
 
-  ctx.drawImage(inputImage, 0, 0, canvas.width, canvas.height);
+  const mask = await maskTensor.squeeze().array();
+  const imageData = ctx.createImageData(img.width, img.height);
 
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const maskData = segmentation.data;
-  const maskWidth = segmentation.width;
-  const maskHeight = segmentation.height;
-
-  for (let y = 0; y < canvas.height; y++) {
-    const maskY = Math.floor(y * maskHeight / canvas.height);
-    for (let x = 0; x < canvas.width; x++) {
-      const maskX = Math.floor(x * maskWidth / canvas.width);
-      const maskIndex = maskY * maskWidth + maskX;
-      const isForeground = maskData[maskIndex] !== 0;
-
-      const i = (y * canvas.width + x) * 4;
-      if (!whiteBg) {
-        imageData.data[i + 3] = isForeground ? 255 : 0;
-      } else {
-        imageData.data[i + 3] = 255;
-      }
+  for (let y=0; y<img.height; y++) {
+    const maskY = Math.floor(y * mask.length / img.height);
+    for (let x=0; x<img.width; x++) {
+      const maskX = Math.floor(x * mask[0].length / img.width);
+      const alpha = mask[maskY][maskX]; // 0..1
+      const i = (y*img.width + x)*4;
+      // Draw original pixel
+      imageData.data[i] = imgData.data[i];
+      imageData.data[i+1] = imgData.data[i+1];
+      imageData.data[i+2] = imgData.data[i+2];
+      imageData.data[i+3] = whiteBg ? 255 : Math.floor(alpha*255);
     }
   }
 
   ctx.putImageData(imageData, 0, 0);
 }
 
-// Handle image upload
 fileInput.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = async (ev) => {
-    inputImage.src = ev.target.result;
-    previewContainer.classList.remove("hidden");
-    progressContainer.classList.remove("hidden");
-    updateProgress(40, "Preparing image...");
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  previewContainer.classList.remove("hidden");
+  progressContainer.classList.remove("hidden");
+  updateProgress(20, "Loading image...");
 
-    inputImage.onload = async () => {
-      const model = await loadModel();
-      updateProgress(60, "Running AI segmentation...");
+  img.onload = async () => {
+    const model = await loadModel();
+    updateProgress(50, "Processing...");
 
-      const segmentation = await model.segment(inputImage);
+    const tensor = preprocessImage(img);
+    const mask = model.predict(tensor); // [1,320,320,1]
+    updateProgress(80, "Rendering result...");
 
-      updateProgress(80, "Rendering...");
-      renderCanvasWithMask(segmentation, bgToggle.checked);
+    // Draw original image to get pixel data
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = img.width; tempCanvas.height = img.height;
+    const tempCtx = tempCanvas.getContext("2d");
+    tempCtx.drawImage(img,0,0);
+    window.imgData = tempCtx.getImageData(0,0,img.width,img.height);
 
-      updateProgress(100, "Done!");
-      setTimeout(() => progressContainer.classList.add("hidden"), 500);
+    renderMask(img, mask, bgToggle.checked);
+    updateProgress(100, "Done!");
+    setTimeout(()=>progressContainer.classList.add("hidden"), 500);
 
-      bgToggle.addEventListener("change", () => {
-        renderCanvasWithMask(segmentation, bgToggle.checked);
-      });
-    };
+    bgToggle.addEventListener("change", ()=>renderMask(img, mask, bgToggle.checked));
   };
-  reader.readAsDataURL(file);
 });
 
-// Download button
-downloadBtn.addEventListener("click", () => {
+downloadBtn.addEventListener("click", ()=>{
   const link = document.createElement("a");
   link.download = "background_removed.png";
   link.href = outputCanvas.toDataURL("image/png");
