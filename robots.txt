@@ -1,4 +1,5 @@
 User-agent: *
-Allow: /
-
+Disallow: 
+Disallow: /cgi-bin/
 Sitemap: https://quicktools.click/sitemap.xml
+
