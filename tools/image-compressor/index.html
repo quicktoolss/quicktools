@@ -1,70 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="description" content="Compress images online for free with QuickTools. Reduce file size while maintaining quality. Batch processing supported.">
-<meta name="keywords" content="Image Compressor, compress images online, reduce image size, QuickTools, free image tools, JPG compressor, PNG compressor">
-<link rel="canonical" href="https://quicktools.click/tools/image-compressor/">
-
-<meta property="og:title" content="Image Compressor Online - QuickTools">
-<meta property="og:description" content="Compress images online for free with QuickTools. Reduce file size while maintaining quality. Batch processing supported.">
-<meta property="og:url" content="https://quicktools.click/tools/image-compressor/">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://quicktools.click/assets/image-compressor-preview.png">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Image Compressor Online",
-  "url": "https://quicktools.click/tools/image-compressor/",
-  "applicationCategory": "Utility",
-  "operatingSystem": "Web",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
-  "description": "Compress images online for free with QuickTools. Reduce file size while maintaining quality. Batch processing supported."
-}
-</script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Image Compressor — QuickTools</title>
+  <title>Image Compressor — Free Online JPG/PNG/WebP Optimization | QuickTools</title>
+  <meta name="description" content="Compress, resize, and optimize images (JPG, PNG, WebP) privately in your browser. Free, fast, no uploads.">
+  <!-- OG & Schema -->
+  <meta property="og:title" content="Image Compressor — QuickTools" />
+  <meta property="og:description" content="Compress, resize, and optimize images instantly — all browser-based with zero upload." />
+  <meta property="og:url" content="https://quicktools.click/tools/image-compressor/" />
+  <meta property="og:image" content="https://quicktools.click/assets/image-compressor-preview.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Image Compressor",
+    "url": "https://quicktools.click/tools/image-compressor/",
+    "description": "Reduce file size, batch compress images, no sign-up!",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <nav class="back-nav">
-    <a href="../../index.html">← Back to QuickTools</a>
-  </nav>
-
+  <nav><a href="../../index.html">Home</a> | <a href="../">All Tools</a></nav>
   <header>
     <h1>🗜️ Image Compressor</h1>
-    <p>Compress, resize, and optimize your images instantly — all offline.</p>
+    <p>Compress, resize, and optimize your images instantly — all offline and private.</p>
   </header>
-
   <main>
+    <!-- Tool UI -->
     <div class="upload-area" id="uploadArea">
       <p>📂 Drag & drop or click to upload images (JPG, PNG, WebP)</p>
       <input type="file" id="fileInput" accept="image/*" multiple hidden />
     </div>
-
     <div id="controls" class="hidden">
       <div class="global-settings">
-        <label>Global Quality:
-          <input type="range" id="globalQuality" min="10" max="100" value="80" />
-          <span id="globalQualityValue">80</span>%
-        </label>
-
-        <label>Auto Size Target (KB):
-          <input type="number" id="targetSize" min="50" placeholder="e.g. 200" />
-        </label>
-
+        <label>Global Quality: <input type="range" id="globalQuality" min="10" max="100" value="80" />
+        <span id="globalQualityValue">80</span>%</label>
+        <label>Auto Size Target (KB): <input type="number" id="targetSize" min="50" /></label>
         <button id="compressAllBtn">Compress All</button>
         <button id="downloadAllBtn" class="hidden">Download All (ZIP)</button>
       </div>
     </div>
-
     <div id="previewGrid" class="preview-grid"></div>
+
+    <section>
+      <h2>Features</h2>
+      <ul>
+        <li>100% browser-based—no uploads, no privacy risk</li>
+        <li>Batch compress images</li>
+        <li>Custom quality slider, size targets</li>
+        <li>Instant preview and ZIP download</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>FAQ</h2>
+      <ul>
+        <li><strong>Are my images uploaded?</strong> No, all processing stays on your device.</li>
+        <li><strong>What file types are supported?</strong> JPG, PNG, WebP.</li>
+        <li><strong>Is it free?</strong> Yes, always—and open source.</li>
+        <li><strong>Want more tools?</strong> <a href="../">Browse all QuickTools</a></li>
+      </ul>
+    </section>
   </main>
-
   <footer>© 2025 QuickTools. All rights reserved.</footer>
-
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
   <script src="script.js"></script>
